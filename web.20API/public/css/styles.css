@@ -1,0 +1,114 @@
+body {
+  background: linear-gradient(135deg, #f8fafc 60%, #e2e8f0 100%);
+  color: #1f2937;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 220px;
+  background: #1e293b;
+  min-height: 100vh;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  padding-top: 2rem;
+  color: #facc15;
+  z-index: 10;
+}
+.sidebar-logo {
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #facc15;
+}
+.nav-link {
+  color: #cbd5e1;
+  transition: background 0.2s;
+  padding: 0.85rem 1.15rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  font-size: 1.07rem;
+  display: flex;
+  align-items: center;
+  gap: .6em;
+  border: none;
+}
+.nav-link.active, .nav-link:hover {
+  background: #334155;
+  color: #facc15;
+}
+.main-content {
+  margin-left: 220px;
+  padding: 2rem 1.5rem 1rem 1.5rem;
+}
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 1rem 0.5rem;}
+}
+.navbar-custom {
+  background: #ffffff !important;
+  border-bottom: 1.5px solid #e5e7eb;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.sede-card, .review-card {
+  background: #ffffff;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 14px 0 rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+}
+.sede-card:hover, .review-card:hover {
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 10px 28px 0 rgba(44,80,170,.17);
+}
+footer {
+  text-align: center;
+  padding: 1.6rem;
+  background: #1e293b;
+  color: #94a3b8;
+  margin-top: 3rem;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+.auth-box {
+  max-width: 430px;
+  margin: 64px auto 0 auto;
+  background: #fff;
+  border-radius: 1.1rem;
+  box-shadow: 0 4px 24px #23293a16;
+  padding: 2.2rem 2.2rem 1.7rem 2.2rem;
+}
+input.form-control, select.form-select {
+  background: #f6f8fa;
+  border: 1.2px solid #d7e3f3;
+  border-radius: 0.6rem;
+  font-size: 1.05rem;
+  padding: 0.65rem 1.1rem;
+}
+input.form-control:focus, select.form-select:focus {
+  border-color: #2977f4;
+  box-shadow: 0 0 0 2px #c2e0ff38;
+}
+.btn-primary, .btn-success {
+  border-radius: 0.85rem;
+  font-weight: 600;
+  font-size: 1.08rem;
+  background: #2977f4;
+  border: none;
+  transition: background 0.14s;
+}
+.btn-primary:hover, .btn-success:hover {
+  background: #1b55a2;
+}
+.btn-success {
+  background: #21ba45;
+}
+a, a:visited { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline;}
+::-webkit-input-placeholder { color: #8997af !important;}
+::-moz-placeholder { color: #8997af !important;}
+:-ms-input-placeholder { color: #8997af !important;}
+::placeholder { color: #8997af !important;}

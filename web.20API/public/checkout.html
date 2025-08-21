@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout Pagamento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Bootstrap Icons (per l’icona “indietro”) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Il tuo CSS -->
+  <link rel="stylesheet" href="css/try.css">
+
+  <style>
+    body { background: #f6f7fb; }
+    .pay-method { cursor: pointer; border: 1.5px solid #d6d6d6; border-radius: 10px; padding: 12px; text-align: center; transition: border .2s, background .2s; height: 100%; }
+    .pay-method:hover { border-color: #0d6efd; }
+    .pay-method.selected { border: 2px solid #0d6efd; background: #eef4ff; }
+    .pay-method-logo { width: 44px; height: 30px; object-fit: contain; margin-bottom: 6px; }
+    .card-details { display: none; }
+    #toast-container { position: fixed; top: 18px; right: 20px; z-index: 12000; }
+    .summary-label { color: #6c757d; font-size: .95rem; }
+    .summary-value { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div id="toast-container"></div>
+
+  <div class="container py-4 py-md-5">
+    <div class="mb-3">
+      <a href="dashboard_cliente.html" class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i> Torna alla dashboard
+      </a>
+    </div>
+
+    <div class="row g-4">
+      <!-- RIEPILOGO PRENOTAZIONE -->
+      <div class="col-12 col-lg-5 order-2 order-lg-1">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Riepilogo prenotazione</h5>
+            <div class="d-flex justify-content-between mb-2">
+              <div class="summary-label">Sede</div>
+              <div id="sumLocation" class="summary-value">—</div>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <div class="summary-label">Città</div>
+              <div id="sumCity" class="summary-value">—</div>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <div class="summary-label">Data</div>
+              <div id="sumDate" class="summary-value">—</div>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <div class="summary-label">Fascia oraria</div>
+              <div id="sumSlot" class="summary-value">—</div>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <div class="summary-label">Tipo</div>
+              <div id="sumType" class="summary-value">—</div>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="summary-label">Totale</div>
+              <div id="sumAmount" class="fs-5 fw-bold">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODULO PAGAMENTO -->
+      <div class="col-12 col-lg-7 order-1 order-lg-2">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h4 class="card-title mb-3">Pagamento</h4>
+
+            <!-- Metodi -->
+            <div class="row g-3 mb-3" id="payMethods">
+              <div class="col-6 col-md-4">
+                <div class="pay-method selected" data-method="Carta" tabindex="0" role="button" aria-pressed="true">
+                  <img class="pay-method-logo" src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa">
+                  <div class="small text-muted">Carta (Visa/Amex)</div>
+                </div>
+              </div>
+
+              <div class="col-6 col-md-4">
+                <div class="pay-method" data-method="Mastercard" tabindex="0" role="button" aria-pressed="false">
+                  <img class="pay-method-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
+                  <div class="small text-muted">Mastercard</div>
+                </div>
+              </div>
+
+              <div class="col-6 col-md-4">
+                <div class="pay-method" data-method="Apple Pay" tabindex="0" role="button" aria-pressed="false">
+                  <img class="pay-method-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay">
+                  <div class="small text-muted">Apple&nbsp;Pay</div>
+                </div>
+              </div>
+              <!-- puoi aggiungere altre tile copiando una col e cambiando data-method/label -->
+            </div>
+
+            <!-- Dettagli carta -->
+            <div id="cardDetails" class="card-details">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="ccNumber" class="form-label">Numero carta</label>
+                  <input type="text" inputmode="numeric" maxlength="19" class="form-control" id="ccNumber" placeholder="1234 5678 9012 3456">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="ccName" class="form-label">Nome sulla carta</label>
+                  <input type="text" class="form-control" id="ccName" placeholder="MOHIT KABOTRA">
+                </div>
+                <div class="col-6 col-md-3">
+                  <label for="ccExp" class="form-label">Scadenza (MM/YY)</label>
+                  <input type="text" class="form-control" id="ccExp" placeholder="08/27" maxlength="5">
+                </div>
+                <div class="col-6 col-md-3">
+                  <label for="ccCvv" class="form-label">CVV</label>
+                  <input type="password" class="form-control" id="ccCvv" placeholder="***" maxlength="4">
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-grid">
+              <button id="btnPay" class="btn btn-primary btn-lg">Paga ora</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ===========================
+    //    UTILS / TOAST
+    // ===========================
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function showToast(message, type = "success", autocloseMs = 2500) {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `toast align-items-center text-white border-0 show mb-2 bg-${type === "danger" ? "danger" : "dark"}`;
+      toast.role = "alert";
+      toast.innerHTML = `
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>`;
+      container.appendChild(toast);
+      const bsToast = new bootstrap.Toast(toast, { delay: autocloseMs });
+      bsToast.show();
+      setTimeout(() => toast.remove(), autocloseMs + 400);
+    }
+
+    function formatEuro(v) {
+      const n = Number(v || 0);
+      return n.toLocaleString("it-IT", { style: "currency", currency: "EUR" });
+    }
+
+    // ===========================
+    //    STATO PAGINA
+    // ===========================
+    let currentBooking = null;
+    let selectedMethod = "Carta"; // default
+    const bookingId = sessionStorage.getItem("checkoutBookingId");
+
+    if (!bookingId) {
+      showToast("Nessuna prenotazione selezionata", "danger");
+      setTimeout(() => window.location.href = "dashboard_cliente.html", 1200);
+    }
+
+    // ===========================
+    //    METODI PAGAMENTO UI
+    // ===========================
+    const payMethodsEl = document.getElementById("payMethods");
+    const cardDetailsEl = document.getElementById("cardDetails");
+
+    function requiresCardDetails(method) {
+      return method === "Carta" || method === "Mastercard";
+    }
+
+    function renderPayMethods() {
+      [...payMethodsEl.querySelectorAll(".pay-method")].forEach(el => {
+        const m = el.getAttribute("data-method");
+        if (m === selectedMethod) {
+          el.classList.add("selected");
+          el.setAttribute("aria-pressed", "true");
+        } else {
+          el.classList.remove("selected");
+          el.setAttribute("aria-pressed", "false");
+        }
+      });
+      cardDetailsEl.style.display = requiresCardDetails(selectedMethod) ? "block" : "none";
+    }
+
+    payMethodsEl.addEventListener("click", (e) => {
+      const item = e.target.closest(".pay-method");
+      if (!item) return;
+      selectedMethod = item.getAttribute("data-method") || "Carta";
+      renderPayMethods();
+    });
+
+    payMethodsEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        const item = e.target.closest(".pay-method");
+        if (!item) return;
+        selectedMethod = item.getAttribute("data-method") || "Carta";
+        renderPayMethods();
+        e.preventDefault();
+      }
+    });
+
+    // ===========================
+    //    CARICA BOOKING
+    // ===========================
+    async function loadCurrentBooking() {
+      try {
+        const res = await fetch("/api/cliente/bookings", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        if (!res.ok) throw new Error("Errore caricamento prenotazioni");
+        const all = await res.json();
+        currentBooking = all.find(b => String(b.id) === String(bookingId));
+        if (!currentBooking) {
+          showToast("Prenotazione non trovata", "danger");
+          setTimeout(() => window.location.href = "dashboard_cliente.html", 1200);
+          return;
+        }
+        renderSummary();
+      } catch (err) {
+        console.error(err);
+        showToast("Errore di rete", "danger");
+      }
+    }
+
+  function renderSummary() {
+  const {
+    location_name,
+    location_city,
+    date,
+    time_slot,
+    space_type,
+    workstation_name,
+    amount_to_pay,   // ✅ ora arriva dal backend
+    paid_amount
+  } = currentBooking;
+
+  document.getElementById("sumLocation").textContent = location_name || "—";
+  document.getElementById("sumCity").textContent = location_city || "—";
+  document.getElementById("sumDate").textContent = date || "—";
+  document.getElementById("sumSlot").textContent = time_slot || "—";
+
+  const tipo = workstation_name
+    ? ("Postazione" + (workstation_name ? " • " + workstation_name : ""))
+    : (space_type ? ("Sala • " + space_type) : "—");
+  document.getElementById("sumType").textContent = tipo;
+
+  const importo = (amount_to_pay ?? paid_amount ?? 0);
+  document.getElementById("sumAmount").textContent = formatEuro(importo);
+}
+
+    // ===========================
+    //    VALIDAZIONI CARTA
+    // ===========================
+    function validateCardFields() {
+      const ccNumber = document.getElementById("ccNumber").value.replace(/\s+/g, "");
+      const ccName = document.getElementById("ccName").value.trim();
+      const ccExp = document.getElementById("ccExp").value.trim();
+      const ccCvv = document.getElementById("ccCvv").value.trim();
+
+      if (!/^\d{13,19}$/.test(ccNumber)) {
+        showToast("Numero carta non valido", "danger");
+        document.getElementById("ccNumber").focus();
+        return false;
+      }
+      if (ccName.length < 2) {
+        showToast("Inserisci il nome sulla carta", "danger");
+        document.getElementById("ccName").focus();
+        return false;
+      }
+      if (!/^\d{2}\/\d{2}$/.test(ccExp)) {
+        showToast("Formato scadenza non valido (MM/YY)", "danger");
+        document.getElementById("ccExp").focus();
+        return false;
+      }
+      const [mm, yy] = ccExp.split("/");
+      const m = Number(mm), y = 2000 + Number(yy);
+      if (m < 1 || m > 12) {
+        showToast("Mese scadenza non valido", "danger");
+        document.getElementById("ccExp").focus();
+        return false;
+      }
+      const expDate = new Date(y, m, 0, 23, 59, 59); // ultimo giorno del mese m
+      if (expDate < new Date()) {
+        showToast("Carta scaduta", "danger");
+        document.getElementById("ccExp").focus();
+        return false;
+      }
+      if (!/^\d{3,4}$/.test(ccCvv)) {
+        showToast("CVV non valido", "danger");
+        document.getElementById("ccCvv").focus();
+        return false;
+      }
+      return true;
+    }
+
+    // ===========================
+    //    AZIONE PAGA
+    // ===========================
+    document.getElementById("btnPay").addEventListener("click", async () => {
+      if (!currentBooking) return;
+
+      // valida carta solo quando serve
+      if (requiresCardDetails(selectedMethod)) {
+        if (!validateCardFields()) return;
+      }
+
+      try {
+        const res = await fetch(`/api/cliente/bookings/${currentBooking.id}/pay`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({ method: selectedMethod })
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ message: "Errore pagamento" }));
+          showToast(err.message || "Errore pagamento", "danger");
+          return;
+        }
+        const data = await res.json();
+        showToast("Pagamento completato! " + (data.amount ? "Addebitati " + formatEuro(data.amount) : ""), "success");
+        setTimeout(() => { window.location.href = "prenotazioni_cliente.html"; }, 1200);
+      } catch (e) {
+        console.error(e);
+        showToast("Errore di rete durante il pagamento", "danger");
+      }
+    });
+
+    // ===========================
+    //    INIT
+    // ===========================
+    renderPayMethods();
+    loadCurrentBooking();
+  </script>
+</body>
+</html>
