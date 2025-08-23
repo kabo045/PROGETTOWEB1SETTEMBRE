@@ -1,0 +1,172 @@
+/* === Reset base e gestione overflow === */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 1rem;
+  background: #f4f8fb;
+  color: #212529;
+  overflow-x: hidden;
+}
+
+body.d-flex {
+  flex-direction: row;
+  min-height: 100vh;
+  display: flex;
+  width: 100vw;
+}
+
+/* Sidebar responsive */
+.sidebar {
+  background: #fff;
+  min-width: 200px;
+  max-width: 260px;
+  width: 18vw;
+  border-right: 1px solid #e3eefa;
+  box-shadow: 2px 0 14px #e0edfc;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+/* Main content adattivo */
+.dashboard-main {
+  background: #fff;
+  min-height: 100vh;
+  flex: 1 1 0%;
+  border-radius: 2rem;
+  box-shadow: 0 8px 40px #244b7633;
+  margin: 2rem 2vw;
+  padding: 2.2rem 1.5rem 2rem 1.5rem;
+  max-width: 1200px;
+  min-width: 280px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.filter-bar,
+.card-sede {
+  box-sizing: border-box;
+}
+
+/* Card sede responsive */
+.card-sede {
+  border-radius: 1.2rem;
+  background: #f6fbff;
+  border: 1px solid #e0edfc;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px #a5b8d216;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  cursor: pointer;
+  min-width: 0;
+  word-break: break-word;
+}
+.card-sede img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Responsive immagini */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Responsive Bootstrap columns fix */
+[class^="col-"], [class*=" col-"] {
+  min-width: 0;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+/* Sidebar nascondi su mobile */
+@media (max-width: 900px) {
+  body.d-flex {
+    flex-direction: column;
+  }
+  .sidebar {
+    position: static;
+    width: 100vw;
+    min-width: 0;
+    max-width: 100vw;
+    height: auto;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid #e3eefa;
+    box-shadow: 0 2px 10px #e0edfc;
+    overflow-x: auto;
+    margin-bottom: 0.5rem;
+    z-index: 100;
+  }
+  .sidebar .nav {
+    flex-direction: row;
+    width: 100vw;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  .sidebar-logo {
+    display: none;
+  }
+  .dashboard-main {
+    margin: 1rem 0.3rem;
+    border-radius: 1rem;
+    padding: 1rem 0.5rem;
+    max-width: 100vw;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-main {
+    padding: 0.7rem 0.2rem;
+    margin: 0.5rem 0;
+    border-radius: 0.6rem;
+    font-size: 0.96rem;
+  }
+  .filter-bar {
+    padding: 0.7rem 0.3rem 0.2rem 0.3rem;
+    margin-bottom: 0.7rem;
+    border-radius: 0.8rem;
+    font-size: 0.96rem;
+  }
+}
+
+/* Step/modal adattivi */
+.modal-content {
+  max-width: 95vw;
+  margin: 0 auto;
+}
+#prenotaModalBody {
+  overflow-x: auto;
+}
+
+/* Pulsanti e form adattivi */
+button, .btn, input, select {
+  font-size: 1em;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Toast responsive */
+#toast-container {
+  max-width: 95vw;
+}
+
+.toast {
+  word-break: break-word;
+}
+
+/* Fix varie */
+.no-wrap {
+  white-space: nowrap;
+}
