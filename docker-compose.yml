@@ -1,32 +1,29 @@
+version: '3.9'
 services:
   db:
     image: postgres:16
+    restart: always
     environment:
-      POSTGRES_DB: web
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: postgres  # << DEVE essere uguale al .env
+      POSTGRES_DB: web
+
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d web"]
-      interval: 5s
-      timeout: 5s
-      retries: 40
     volumes:
-      - dbdata:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/1-init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
 
-  tests-all:
-    image: node:18
-    working_dir: /app
-    volumes: [ ".:/app" ]
-    environment:
-      NODE_ENV: test
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/web
-      JWT_SECRET: secret
+  app:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
     depends_on:
-      db: { condition: service_healthy }
-    entrypoint: ["sh","-lc","npm install --no-audit --no-fund && npm run test:cliente && npm run test:gestore && npm run test:admin"]
+      - db
+    env_file:
+      - .env
 
 volumes:
-  dbdata:
+  pgdata:
