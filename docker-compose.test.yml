@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: web
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d web"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+    volumes:
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: test
+      JWT_SECRET: secret
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/web
+    command: ["npm", "run", "test:all"]

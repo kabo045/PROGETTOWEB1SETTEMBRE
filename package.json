@@ -1,0 +1,35 @@
+{
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4",
+    "wait-on": "^8.0.4"
+  },
+ 
+  "scripts": {
+    "test:all": "mocha \"test/**/*.js\" --timeout 30000",
+
+    "test:cliente": "mocha \"test/test-client-api.js\" --timeout 30000",
+    "test:gestore": "mocha \"test/test-gestore-api.js\" --timeout 30000",
+    "test:admin": "mocha \"test/test-admin-api.js\" --timeout 30000",
+
+    "compose:tests:all": "docker compose -f docker-compose.test.yml run --rm tests npm run test:all",
+    "compose:tests:cliente": "docker compose -f docker-compose.test.yml run --rm tests npm run test:cliente",
+    "compose:tests:gestore": "docker compose -f docker-compose.test.yml run --rm tests npm run test:gestore",
+    "compose:tests:admin": "docker compose -f docker-compose.test.yml run --rm tests npm run test:admin",
+
+    "compose:db:up": "docker compose -f docker-compose.test.yml up -d db",
+    "compose:db:down": "docker compose -f docker-compose.test.yml down -v --remove-orphans"
+  }
+
+}

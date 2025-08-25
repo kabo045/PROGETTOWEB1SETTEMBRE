@@ -18,19 +18,17 @@ Tutti i test girano **in Docker**, utilizzando il **DB PostgreSQL del docker-com
 ### 2. Avvio test completi
 Per lanciare **tutti i test (cliente, gestore, admin)** in un solo comando:
 
-    docker compose up --build tests-all --abort-on-container-exit
+    npm run compose:tests:all
 
 - Se tutto funziona, alla fine vedrai solo test **passing** (verde).  
-- Puoi fermare i container con:
 
-    docker compose down --remove-orphans
 
 ### 3. Avvio test singoli
 Puoi lanciare anche le singole suite:
 
-    docker compose up --build tests-cliente --abort-on-container-exit
-    docker compose up --build tests-gestore --abort-on-container-exit
-    docker compose up --build tests-admin   --abort-on-container-exit
+    npm run compose:tests:gestore
+    npm run compose:tests:cliente
+    npm run compose:tests:admin
 
 ------------------------------------------------------------
 
