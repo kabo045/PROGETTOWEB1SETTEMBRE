@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Assistenza Clienti | CoWorkSpace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="css/try.css">
+
+  <style>
+    body { background: #f4f8fb; color: #212529; }
+    .sidebar { background: #fff; min-width: 250px; border-right: 1px solid #e3eefa; box-shadow: 2px 0 14px #e0edfc; }
+    .sidebar-logo { font-weight: bold; font-size: 1.5rem; margin-bottom: 2rem; color: #3182ce; }
+    .sidebar a { color: #555 !important; border-radius: 8px; font-weight: 500; margin-bottom: 0.1rem; transition: background 0.17s; }
+    .sidebar a.active, .sidebar a:focus { background: #e9f0fb !important; color: #1a237e !important; }
+    .dashboard-main { background: #fff; min-height: 100vh; border-radius: 1.5rem; box-shadow: 0 8px 40px #244b7633; padding: 2.5rem; margin: 2rem 2vw; }
+    .support-card { background: #f6fbff; border-radius: 1.2rem; padding: 2rem 1.5rem; box-shadow: 0 2px 8px #3182ce11; border: 2px solid #e3eefa; max-width: 560px; margin: auto; }
+    .support-card h2 { color: #3182ce; font-weight: 700; margin-bottom: 1.4rem; letter-spacing: 0.01em; }
+    .support-card label { font-weight: 500; margin-top: 1rem; }
+    .support-card input, .support-card textarea, .support-card select {
+      border-radius: 1rem;
+      background: #e9f0fb;
+      border: 1.2px solid #d1e4ff;
+      font-size: 1rem;
+    }
+    .support-card input:focus, .support-card textarea:focus, .support-card select:focus {
+      border-color: #3182ce; outline: none; background: #fff;
+    }
+    .support-card button {
+      background: #3182ce;
+      border: none;
+      border-radius: 1.3rem;
+      padding: 0.7rem 1.5rem;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 1.2rem;
+      box-shadow: 0 2px 10px #3182ce21;
+      transition: background 0.2s;
+    }
+    .support-card button:hover { background: #1a68b4; }
+    #supportResponse { margin-top: 1rem; font-weight: 500; min-height: 28px; }
+    @media (max-width: 700px) {
+      .dashboard-main { padding: 1.1rem; margin: 1rem 0.5vw;}
+      .support-card { padding: 1.1rem 0.3rem; }
+    }
+  </style>
+</head>
+<body class="d-flex">
+  <!-- Sidebar -->
+  <nav class="sidebar d-flex flex-column flex-shrink-0 p-3">
+    <div class="sidebar-logo"><span>🧠</span> <span>CoWorkSpace</span></div>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li><a href="dashboard_cliente.html" class="nav-link"><i class="bi bi-house me-2"></i> Dashboard</a></li>
+      <li><a href="prenota_cliente.html" class="nav-link"><i class="bi bi-calendar-check me-2"></i> Prenota una Sede</a></li>
+      <li><a href="prenotazioni_cliente.html" class="nav-link"><i class="bi bi-clipboard-check me-2"></i> Le mie Prenotazioni</a></li>
+      <li><a href="pagamenti_cliente.html" class="nav-link"><i class="bi bi-credit-card me-2"></i> Pagamenti</a></li>
+      <li><a href="account_cliente.html" class="nav-link"><i class="bi bi-person-circle me-2"></i> Il mio Profilo</a></li>
+      <li><a href="notifiche_cliente.html" class="nav-link"><i class="bi bi-bell me-2"></i> Notifiche</a></li>
+      <li><a href="feedback_cliente.html" class="nav-link"><i class="bi bi-star-half me-2"></i> Recensioni Sedi</a></li>
+      <li><a href="assistenzacliente.html" class="nav-link active"><i class="bi bi-life-preserver me-2"></i> Assistenza cliente</a></li>
+    </ul>
+    <hr>
+    <button id="logoutBtn" class="btn btn-outline-danger w-100 mt-auto">
+      <i class="bi bi-box-arrow-right me-2"></i> Logout
+    </button>
+  </nav>
+
+  <!-- Main content -->
+  <main class="flex-grow-1 dashboard-main">
+    <div class="support-card">
+      <h2><i class="bi bi-life-preserver me-2"></i>Assistenza Clienti</h2>
+      <form id="supportForm" autocomplete="off">
+        <label for="location" class="mb-1">Sede di riferimento</label>
+        <select id="location" class="form-select" required>
+          <option value="">Seleziona la sede...</option>
+        </select>
+        <label for="subject" class="mb-1">Oggetto</label>
+        <input type="text" id="subject" class="form-control" maxlength="80" required>
+        <label for="message" class="mb-1">Messaggio</label>
+        <textarea id="message" class="form-control" rows="5" maxlength="600" required></textarea>
+        <button type="submit" id="sendBtn"><i class="bi bi-send me-1"></i>Invia richiesta</button>
+      </form>
+      <div id="supportResponse"></div>
+    </div>
+  </main>
+  <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1055;"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/assistenzacliente.js"></script>
+</body>
+</html>
