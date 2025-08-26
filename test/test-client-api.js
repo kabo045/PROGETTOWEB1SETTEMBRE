@@ -60,7 +60,7 @@ async function pickRealData() {
   }
 }
 
-describe('API Cliente (DB Docker reale, senza dati farlocchi)', () => {
+describe('API Cliente (DB Docker )', () => {
   before(async () => {
     await ensureClientAndToken();
     await pickRealData();

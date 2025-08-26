@@ -12,7 +12,7 @@ const connectionString =
   `postgresql://${PGUSER || "postgres"}:${PGPASSWORD || "postgres"}@${PGHOST || "db"}:${PGPORT || "5432"}/${PGDATABASE || "web"}`;
 const pool = new Pool({ connectionString });
 
-describe("API Gestore (rotte italiane, DB Docker reale)", function () {
+describe("API Gestore (rotte , DB )", function () {
   this.timeout(30000);
 
   let token, gestoreId;
