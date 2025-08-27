@@ -23,7 +23,7 @@ async function sql(q, params = []) {
   finally { c.release(); }
 }
 
-// 1) Assicura un utente cliente nel DB e genera JWT, senza dipendere da /login
+// Assicura un utente cliente nel DB e genera JWT, senza dipendere da /login
 async function ensureClientAndToken() {
   // Cerca utente
   let users = await sql(`SELECT id, email FROM users WHERE email=$1 LIMIT 1`, [TEST_EMAIL]);
@@ -46,7 +46,7 @@ async function ensureClientAndToken() {
   );
 }
 
-// 2) Pesca dati REALI già presenti nel DB (niente insert farlocche)
+// Pesca dati veritieri già presenti nel DB (niente insert finte)
 async function pickRealData() {
   const loc = await sql(`SELECT id FROM locations ORDER BY id LIMIT 1`);
   if (loc.length) {
@@ -67,7 +67,7 @@ describe('API Cliente (DB Docker )', () => {
   });
 
   after(async () => {
-    // cleanup leggero solo su ciò che creiamo nei test (prenotazioni, pagamenti, notifica)
+    // cleanup solo su ciò che creiamo nei test (prenotazioni, pagamenti, notifica)
     if (userId) {
       await sql(`DELETE FROM payments WHERE booking_id IN (SELECT id FROM bookings WHERE user_id=$1)`, [userId]);
       await sql(`DELETE FROM bookings WHERE user_id=$1`, [userId]);
@@ -228,3 +228,4 @@ describe('API Cliente (DB Docker )', () => {
     });
   });
 });
+
