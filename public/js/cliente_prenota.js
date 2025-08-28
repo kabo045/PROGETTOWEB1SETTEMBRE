@@ -11,33 +11,112 @@ const filtroServizi = document.getElementById("filtroServizi");
 
 let userBookings = [];
 
-// Toast con azioni (conferme)
+// ====== NUOVO: lock per impedire multi-click sugli orari ======
+let bookingLock = false;
+function setSlotButtonsDisabled(state) {
+  const selectors = [
+    "#selezioneSlotModal button",
+    "#selezioneDataModal .btn-light.border"
+  ];
+  document.querySelectorAll(selectors.join(",")).forEach(btn => {
+    if (state) {
+      btn.setAttribute("disabled", "disabled");
+      btn.classList.add("opacity-75");
+      btn.style.pointerEvents = "none";
+    } else {
+      btn.removeAttribute("disabled");
+      btn.classList.remove("opacity-75");
+      btn.style.pointerEvents = "";
+    }
+  });
+}
+
+// Toast con azioni (conferme) — resa più carina + singleton per conferme
 function showToast(msg, type = "success", actions = []) {
   const toast = document.createElement("div");
-  toast.className = `toast align-items-center bg-${type === "danger" ? "danger" : "dark"} text-white border-0 show mb-2`;
+  toast.className = `toast align-items-center border-0 show mb-2 shadow ${
+    type === "danger"
+      ? "bg-danger text-white"
+      : type === "success"
+      ? "bg-warning text-dark fw-bold"
+      : "bg-primary text-white"
+  }`;
   toast.role = "alert";
+
+  // se è una conferma, rimuovi eventuali conferme già aperte
+  if (actions.length) {
+    document.querySelectorAll(".toast.toast-confirm").forEach(t => t.remove());
+    toast.classList.add("toast-confirm");
+  }
+
+  const title =
+    type === "danger"
+      ? "Attenzione"
+      : type === "success"
+      ? "OK"
+      : "Conferma";
+
   let actionsHtml = "";
   if (actions.length) {
-    actionsHtml = `<div class="mt-2 pt-2 border-top d-flex gap-2">${actions.map(a => `
-      <button type="button" class="btn btn-sm btn-${a.type || 'secondary'} ms-auto" data-action="${a.id}">${a.label}</button>
-    `).join("")}</div>`;
+    actionsHtml = `<div class="mt-2 pt-2 border-top d-flex gap-2">
+        ${actions
+          .map(
+            a => `
+          <button type="button" class="btn btn-sm btn-${
+            a.type || "secondary"
+          } ms-auto rounded-pill px-3" data-action="${a.id}">
+            ${a.label}
+          </button>`
+          )
+          .join("")}
+      </div>`;
   }
+
   toast.innerHTML = `
-    <div class="d-flex flex-column">
-      <div class="toast-body">${msg}</div>
+    <div class="d-flex flex-column position-relative p-1">
+      <div class="toast-body">
+        <div class="d-flex align-items-start gap-2">
+          <i class="bi bi-${
+            type === "danger" ? "exclamation-triangle" : "question-circle"
+          } fs-5"></i>
+          <div>
+            <div class="fw-semibold">${title}</div>
+            <div class="small">${msg}</div>
+          </div>
+        </div>
+      </div>
       ${actionsHtml}
-      <button type="button" class="btn-close btn-close-white me-2 m-auto position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="toast"></button>
+      <button type="button" class="btn-close ${
+        type === "success" ? "" : "btn-close-white"
+      } me-2 m-auto position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   `;
   toastContainer.appendChild(toast);
 
   // Azioni custom
   actions.forEach(a => {
-    toast.querySelector(`[data-action="${a.id}"]`).onclick = () => {
-      a.onClick();
-      toast.remove();
+    const btn = toast.querySelector(`[data-action="${a.id}"]`);
+    if (btn) {
+      btn.onclick = () => {
+        // evita doppi invii clic rapidi sullo stesso bottone
+        if (btn.dataset._clicked) return;
+        btn.dataset._clicked = "1";
+        a.onClick();
+        toast.remove();
+      };
     }
   });
+
+  // Se chiudi la toast di conferma con la X, sblocca i pulsanti
+  const closeBtn = toast.querySelector('[data-bs-dismiss="toast"]');
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      if (toast.classList.contains("toast-confirm")) {
+        bookingLock = false;
+        setSlotButtonsDisabled(false);
+      }
+    });
+  }
 
   if (!actions.length) setTimeout(() => toast.remove(), 4000);
 }
@@ -66,12 +145,15 @@ async function cercaSedi() {
 
   const citta = filtroCitta.value.trim();
   const tipo = filtroTipologia.value;
-  const serviziChecked = Array.from(filtroServizi.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+  const serviziChecked = Array.from(
+    filtroServizi.querySelectorAll('input[type="checkbox"]:checked')
+  ).map(cb => cb.value);
 
   const params = new URLSearchParams();
   if (citta) params.append("city", citta);
   if (tipo) params.append("type", tipo);
-  if (serviziChecked.length > 0) params.append("service", serviziChecked.join(","));
+  if (serviziChecked.length > 0)
+    params.append("service", serviziChecked.join(","));
 
   try {
     const res = await fetch(`/api/cliente/locations?${params.toString()}`, {
@@ -83,23 +165,38 @@ async function cercaSedi() {
       noSedi.style.display = "";
       return;
     }
-    listaSedi.innerHTML = sedi.map(sede => `
+    listaSedi.innerHTML = sedi
+      .map(
+        sede => `
       <div class="col-md-6 col-lg-4">
-        <div class="card card-sede h-100" onclick="selezionaSede(${sede.id})" data-sede-id="${sede.id}" style="cursor:pointer;">
+        <div class="card card-sede h-100" onclick="selezionaSede(${
+          sede.id
+        })" data-sede-id="${sede.id}" style="cursor:pointer;">
           <div class="card-body d-flex align-items-center gap-3">
-            <img src="${sede.image_url || 'https://cdn-icons-png.flaticon.com/512/2920/2920209.png'}" alt="Immagine sede" width="80" height="55">
+            <img src="${
+              sede.image_url ||
+              "https://cdn-icons-png.flaticon.com/512/2920/2920209.png"
+            }" alt="Immagine sede" width="80" height="55">
             <div>
               <h5 class="card-title mb-0">${sede.name}</h5>
               <span class="badge bg-primary">${sede.city}</span>
-              <div class="small text-muted">${(sede.services || []).join(", ")}</div>
+              <div class="small text-muted">${(sede.services || []).join(
+                ", "
+              )}</div>
               <div class="fw-bold mt-1">
-                da €${(sede.price && !isNaN(sede.price)) ? Number(sede.price).toFixed(2) : '--'}
+                da €${
+                  sede.price && !isNaN(sede.price)
+                    ? Number(sede.price).toFixed(2)
+                    : "--"
+                }
               </div>
             </div>
           </div>
         </div>
       </div>
-    `).join("");
+    `
+      )
+      .join("");
   } catch {
     listaSedi.innerHTML = "";
     showToast("Errore nel caricamento delle sedi", "danger");
@@ -114,7 +211,9 @@ window.selezionaSede = async function (sedeId) {
   prenotaModal.show();
 
   try {
-    const resSpazi = await fetch(`/api/cliente/locations/${sedeId}/spaces`, { headers: { Authorization: `Bearer ${token}` } });
+    const resSpazi = await fetch(`/api/cliente/locations/${sedeId}/spaces`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     const spazi = await resSpazi.json();
 
     if (!spazi.length) {
@@ -125,19 +224,26 @@ window.selezionaSede = async function (sedeId) {
     prenotaModalBody.innerHTML = `
       <div class="step-title mb-3 fs-5">Scegli uno spazio disponibile</div>
       <div class="row g-3 mb-3">
-        ${spazi.map(spazio => `
+        ${spazi
+          .map(
+            spazio => `
           <div class="col-12 col-md-6">
-            <div class="card shadow border-0 h-100" style="cursor:pointer;" onclick="selezionaSpazioModal(${sedeId},${spazio.id},'${spazio.type.replace(/'/g,"")}')">
+            <div class="card shadow border-0 h-100" style="cursor:pointer;" onclick="selezionaSpazioModal(${sedeId},${spazio.id},'${spazio.type.replace(
+              /'/g,
+              ""
+            )}')">
               <div class="card-body d-flex flex-column gap-2">
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="badge bg-primary">${spazio.type}</span>
                   <span class="badge bg-secondary">${spazio.capacity} posti</span>
                 </div>
-                <div class="fw-bold fs-6">${spazio.name || 'Spazio'}</div>
+                <div class="fw-bold fs-6">${spazio.name || "Spazio"}</div>
               </div>
             </div>
           </div>
-        `).join("")}
+        `
+          )
+          .join("")}
       </div>
       <div id="selezionePostazioneModal"></div>
     `;
@@ -162,9 +268,12 @@ window.selezionaSpazioModal = async function (sedeId, spazioId, spazioType) {
     container.innerHTML = `
       <div class="step-title mb-2">Scegli data e orario</div>
       <div class="row g-2 mb-2">
-        ${futureDates.map(d =>
-      `<div class="col-auto"><button class="btn btn-light border" onclick="caricaSlotSpazioCollettivo(${spazioId},'${d}')">${d}</button></div>`
-    ).join("")}
+        ${futureDates
+          .map(
+            d =>
+              `<div class="col-auto"><button class="btn btn-light border" onclick="caricaSlotSpazioCollettivo(${spazioId},'${d}')">${d}</button></div>`
+          )
+          .join("")}
       </div>
       <div id="selezioneSlotModal"></div>
     `;
@@ -173,7 +282,10 @@ window.selezionaSpazioModal = async function (sedeId, spazioId, spazioType) {
 
   // Altri tipi (open space/postazione): scegli postazione
   try {
-    const resPost = await fetch(`/api/cliente/spaces/${spazioId}/workstations`, { headers: { Authorization: `Bearer ${token}` } });
+    const resPost = await fetch(
+      `/api/cliente/spaces/${spazioId}/workstations`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
     const postazioni = await resPost.json();
 
     if (!postazioni.length) {
@@ -184,13 +296,17 @@ window.selezionaSpazioModal = async function (sedeId, spazioId, spazioType) {
     container.innerHTML = `
       <div class="step-title mb-2">Scegli una postazione</div>
       <div class="row g-2 mb-2">
-        ${postazioni.map(post => `
+        ${postazioni
+          .map(
+            post => `
           <div class="col-6 col-md-4">
             <button class="btn btn-outline-success w-100" onclick="selezionaPostazioneModal(${spazioId},${post.id})">
               ${post.name}
             </button>
           </div>
-        `).join("")}
+        `
+          )
+          .join("")}
       </div>
       <div id="selezioneDataModal"></div>
     `;
@@ -209,19 +325,27 @@ window.caricaSlotSpazioCollettivo = async function (spazioId, data) {
   slotContainer.innerHTML = `
     <div class="mb-2">Orari disponibili:</div>
     <div class="row g-2">
-      ${orari.map(slot => `
+      ${orari
+        .map(
+          slot => `
         <div class="col-auto">
           <button class="btn btn-outline-info" onclick="toastConfermaPrenotazioneCollettiva(${spazioId},'${data}','${slot}')">
             ${slot}
           </button>
         </div>
-      `).join("")}
+      `
+        )
+        .join("")}
     </div>
   `;
 };
 
-// Nuova funzione per conferma toast (NO alert)
+// ====== NUOVO: conferma sala con lock anti-doppio click ======
 window.toastConfermaPrenotazioneCollettiva = function (spazioId, data, timeSlot) {
+  if (bookingLock) return;               // evita più conferme
+  bookingLock = true;
+  setSlotButtonsDisabled(true);
+
   showToast(
     `Confermare la prenotazione di tutta la sala per il ${data}, orario ${timeSlot}?`,
     "info",
@@ -229,14 +353,17 @@ window.toastConfermaPrenotazioneCollettiva = function (spazioId, data, timeSlot)
       {
         id: "yes",
         label: "Conferma",
-        type: "primary",
+        type: "light",
         onClick: () => confermaPrenotazioneCollettiva(spazioId, data, timeSlot)
       },
       {
         id: "no",
         label: "Annulla",
         type: "secondary",
-        onClick: () => {}
+        onClick: () => {
+          bookingLock = false;
+          setSlotButtonsDisabled(false);
+        }
       }
     ]
   );
@@ -255,12 +382,15 @@ window.confermaPrenotazioneCollettiva = async function (spazioId, data, timeSlot
       prenotaModal.hide();
       await caricaPrenotazioniUtente();
       try { sessionStorage.setItem("checkoutBookingId", String(body.bookingId)); } catch (_) {}
-setTimeout(() => { window.location.href = "checkout.html"; }, 1200);
-} else {
+      setTimeout(() => { window.location.href = "checkout.html"; }, 1200);
+    } else {
       showToast(body.message || "Errore prenotazione", "danger");
     }
   } catch {
     showToast("Errore prenotazione", "danger");
+  } finally {
+    bookingLock = false;
+    setSlotButtonsDisabled(false);
   }
 };
 
@@ -276,9 +406,12 @@ window.selezionaPostazioneModal = async function (spazioId, postazioneId) {
   container.innerHTML = `
     <div class="step-title mb-2">Scegli data e orario</div>
     <div class="row g-2 mb-2">
-      ${futureDates.map(d =>
-    `<div class="col-auto"><button class="btn btn-light border" onclick="caricaSlotDisponibiliModal(${postazioneId},'${d}')">${d}</button></div>`
-  ).join("")}
+      ${futureDates
+        .map(
+          d =>
+            `<div class="col-auto"><button class="btn btn-light border" onclick="caricaSlotDisponibiliModal(${postazioneId},'${d}')">${d}</button></div>`
+        )
+        .join("")}
     </div>
     <div id="selezioneSlotModal"></div>
   `;
@@ -328,8 +461,12 @@ window.caricaSlotDisponibiliModal = async function (postazioneId, data) {
   }
 };
 
-// Nuova funzione per conferma toast (NO alert)
+// ====== NUOVO: conferma postazione con lock anti-doppio click ======
 window.toastConfermaPrenotazioneModal = function (postazioneId, data, timeSlot) {
+  if (bookingLock) return;               // evita più conferme
+  bookingLock = true;
+  setSlotButtonsDisabled(true);
+
   showToast(
     `Confermare la prenotazione per il ${data}, orario ${timeSlot}?`,
     "info",
@@ -337,14 +474,17 @@ window.toastConfermaPrenotazioneModal = function (postazioneId, data, timeSlot) 
       {
         id: "yes",
         label: "Conferma",
-        type: "primary",
+        type: "light",
         onClick: () => confermaPrenotazioneModal(postazioneId, data, timeSlot)
       },
       {
         id: "no",
         label: "Annulla",
         type: "secondary",
-        onClick: () => {}
+        onClick: () => {
+          bookingLock = false;
+          setSlotButtonsDisabled(false);
+        }
       }
     ]
   );
@@ -363,12 +503,15 @@ window.confermaPrenotazioneModal = async function (postazioneId, data, timeSlot)
       prenotaModal.hide();
       await caricaPrenotazioniUtente();
       try { sessionStorage.setItem("checkoutBookingId", String(body.bookingId)); } catch (_) {}
-setTimeout(() => { window.location.href = "checkout.html"; }, 1200);
-} else {
+      setTimeout(() => { window.location.href = "checkout.html"; }, 1200);
+    } else {
       showToast(body.message || "Errore prenotazione", "danger");
     }
   } catch {
     showToast("Errore prenotazione", "danger");
+  } finally {
+    bookingLock = false;
+    setSlotButtonsDisabled(false);
   }
 };
 

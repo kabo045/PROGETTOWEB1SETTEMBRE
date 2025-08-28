@@ -42,6 +42,27 @@ async function loadRecensioni() {
     container.innerHTML = `<div class="text-danger w-100">Errore caricamento recensioni.</div>`;
   }
 }
+document.addEventListener("DOMContentLoaded", () => {
+  loadRecensioni();
+
+  const filtroSede = document.getElementById('filtro-sede');
+  const filtroStelle = document.getElementById('filtro-stelle');
+  const ordina = document.getElementById('ordina');
+  const btnReset = document.getElementById('btn-reset');
+
+  [filtroSede, filtroStelle, ordina].forEach(el => {
+    if (el) el.addEventListener('change', applicaFiltriERender);
+  });
+
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      if (filtroSede) filtroSede.value = "";
+      if (filtroStelle) filtroStelle.value = "";
+      if (ordina) ordina.value = "rating_desc";
+      applicaFiltriERender();
+    });
+  }
+});
 
 // --------- UI FILTERS ----------
 function aggiornaFiltroSedi(reviews) {

@@ -6,104 +6,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
-   <link rel="stylesheet" href="css/try.css">
-
+  <link rel="stylesheet" href="css/try.css">
   <style>
     body { background: #f4f8fb; color: #222; }
-    .sidebar {
-      background: #fff;
-      min-width: 250px;
-      border-right: 1px solid #e3eefa;
-      box-shadow: 2px 0 14px #e0edfc;
-    }
-    .sidebar-logo {
-      font-weight: bold;
-      font-size: 1.5rem;
-      margin-bottom: 2rem;
-      color: #3182ce;
-    }
-    .sidebar a {
-      color: #555 !important;
-      border-radius: 8px;
-      font-weight: 500;
-      margin-bottom: 0.1rem;
-      transition: background 0.17s;
-    }
-    .sidebar a.active, .sidebar a:focus {
-      background: #e9f0fb !important;
-      color: #1a237e !important;
-    }
-    .dashboard-main {
-      background: #fff;
-      min-height: 100vh;
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 40px #244b7633;
-      padding: 2.5rem;
-      margin: 2rem 2vw;
-      width: 100%;
-      max-width: 1200px;
-    }
-    .review-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 2rem;
-    }
-    .review-header h2 {
-      color: #3182ce; font-weight: 700;
-    }
-    .reviews-filters {
-      max-width: 800px;
-      margin: 0 auto 1.5rem auto;
-      display: flex;
-      gap: 0.7rem;
-      flex-wrap: wrap;
-    }
-    .reviews-filters select, .reviews-filters button {
-      min-width: 120px;
-    }
-    .reviews-list {
-      max-width: 800px; margin: auto;
-    }
-    .review-card {
-      background: #f6fbff;
-      border-radius: 1.2rem;
-      padding: 1.5rem 1.7rem;
-      margin-bottom: 1.5rem;
-      border: 2px solid #e3eefa;
-      box-shadow: 0 2px 8px #3182ce11;
-    }
-    .review-card .stars {
-      color: #ffb400; font-size: 1.2rem;
-    }
-    .review-card .author {
-      font-size: 0.96rem; color: #3182ce;
-    }
-    .review-card .date {
-      font-size: 0.92rem; color: #868e96;
-    }
-    .review-card .location {
-      font-weight: 600; color: #244b76; margin-bottom: 0.2rem;
-    }
-    .review-card .comment {
-      font-size: 1.06rem; margin-bottom: 0.4rem;
-    }
-    .btn-review {
-      background: #3182ce; color: #fff; border: none;
-      border-radius: 1.1rem; font-weight: 600; padding: 0.6rem 1.2rem;
-      transition: background 0.19s;
-    }
-    .btn-review:hover { background: #195bad; }
-    @media (max-width: 700px) {
-      .dashboard-main { padding: 1.1rem; margin: 1rem 0.5vw;}
-      .reviews-filters { flex-direction: column; gap: 0.6rem; }
-    }
+    .sidebar { background:#fff; min-width:250px; border-right:1px solid #e3eefa; box-shadow:2px 0 14px #e0edfc; }
+    .sidebar-logo { font-weight:700; font-size:1.5rem; margin-bottom:2rem; color:#3182ce; }
+    .sidebar a { color:#555!important; border-radius:8px; font-weight:500; margin-bottom:0.1rem; transition:background .17s; }
+    .sidebar a.active,.sidebar a:focus { background:#e9f0fb!important; color:#1a237e!important; }
+    .dashboard-main { background:#fff; min-height:100vh; border-radius:1.5rem; box-shadow:0 8px 40px #244b7633; padding:2.5rem; margin:2rem 2vw; width:100%; max-width:1200px; }
+    .review-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; }
+    .review-header h2 { color:#3182ce; font-weight:700; }
+    .reviews-filters { max-width:800px; margin:0 auto 1.5rem; display:flex; gap:.7rem; flex-wrap:wrap; }
+    .reviews-filters select,.reviews-filters button { min-width:120px; }
+    .reviews-list { max-width:800px; margin:auto; }
+    .review-card { background:#f6fbff; border-radius:1.2rem; padding:1.5rem 1.7rem; margin-bottom:1.5rem; border:2px solid #e3eefa; box-shadow:0 2px 8px #3182ce11; }
+    .review-card .stars { color:#ffb400; font-size:1.2rem; }
+    .review-card .author { font-size:.96rem; color:#3182ce; }
+    .review-card .date { font-size:.92rem; color:#868e96; }
+    .review-card .location { font-weight:600; color:#244b76; margin-bottom:.2rem; }
+    .review-card .comment { font-size:1.06rem; margin-bottom:.4rem; }
+    .btn-review { background:#3182ce; color:#fff; border:none; border-radius:1.1rem; font-weight:600; padding:.6rem 1.2rem; transition:background .19s; }
+    .btn-review:hover { background:#195bad; }
+    @media (max-width:700px){ .dashboard-main{padding:1.1rem; margin:1rem .5vw;} .reviews-filters{flex-direction:column; gap:.6rem;} }
   </style>
 </head>
 <body class="d-flex">
   <!-- Sidebar -->
   <nav class="sidebar d-flex flex-column flex-shrink-0 p-3">
-    <div class="sidebar-logo">
-      <span>🧠</span> <span>CoWorkSpace</span>
-    </div>
+    <div class="sidebar-logo"><span>🧠</span> <span>CoWorkSpace</span></div>
     <ul class="nav nav-pills flex-column mb-auto">
       <li><a href="dashboard_cliente.html" class="nav-link"><i class="bi bi-house me-2"></i> Dashboard</a></li>
       <li><a href="prenota_cliente.html" class="nav-link"><i class="bi bi-calendar-check me-2"></i> Prenota una Sede</a></li>
@@ -112,7 +42,7 @@
       <li><a href="account_cliente.html" class="nav-link"><i class="bi bi-person-circle me-2"></i> Il mio Profilo</a></li>
       <li><a href="notifiche_cliente.html" class="nav-link"><i class="bi bi-bell me-2"></i> Notifiche</a></li>
       <li><a href="feedback_cliente.html" class="nav-link active"><i class="bi bi-star-half me-2"></i> Recensioni Sedi</a></li>
-      <li><a href="assistenzacliente.html" class="nav-link"><i class="bi bi-life-preserver me-2"></i> Assistenza</a></li>
+      <li><a href="assistenzacliente.html" class="nav-link"><i class="bi bi-bell me-2"></i> Assistenza cliente</a></li>
     </ul>
     <hr>
     <button id="logoutBtn" class="btn btn-outline-danger w-100 mt-auto">
@@ -124,10 +54,12 @@
   <main class="flex-grow-1 dashboard-main">
     <div class="review-header">
       <h2><i class="bi bi-star-half me-2"></i>Recensioni sulle sedi</h2>
-      <button class="btn-review" data-bs-toggle="modal" data-bs-target="#modalRecensione">
+      <!-- AGGIUNTO id="openReviewBtn" -->
+      <button id="openReviewBtn" class="btn-review" data-bs-toggle="modal" data-bs-target="#modalRecensione">
         <i class="bi bi-pencil-square me-1"></i>Lascia una recensione
       </button>
     </div>
+
     <!-- Filtri recensioni -->
     <div class="reviews-filters mb-4">
       <select id="filterLocation" class="form-select">
@@ -143,9 +75,8 @@
       </select>
       <button class="btn btn-secondary" id="resetFiltri"><i class="bi bi-x-circle"></i> Reset</button>
     </div>
-    <div id="reviews" class="reviews-list">
-      <!-- Qui verranno caricate le recensioni dal JS -->
-    </div>
+
+    <div id="reviews" class="reviews-list"><!-- Caricate via JS --></div>
   </main>
 
   <!-- Modale recensione -->
@@ -159,9 +90,8 @@
         <form id="formRecensione">
           <div class="modal-body">
             <label for="location" class="form-label">Sede</label>
-            <select id="location" class="form-select mb-3" required>
-              <!-- Opzioni sedi caricate dal JS -->
-            </select>
+            <select id="location" class="form-select mb-3" required></select>
+
             <label for="rating" class="form-label">Valutazione</label>
             <select id="rating" class="form-select mb-3" required>
               <option value="">Seleziona stelle</option>
@@ -171,6 +101,7 @@
               <option value="2">★★ - Così così</option>
               <option value="1">★ - Scarsa</option>
             </select>
+
             <label for="comment" class="form-label">Commento</label>
             <textarea id="comment" class="form-control" rows="4" maxlength="400" required placeholder="Scrivi la tua esperienza..."></textarea>
             <div id="reviewError" class="mt-2 text-danger" style="font-size:0.96rem;"></div>

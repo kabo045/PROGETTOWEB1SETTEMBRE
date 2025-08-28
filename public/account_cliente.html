@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="css/try.css">
 
   <style>
-    body { background: #f4f8fb; color: #212529; }
+    body { background: #f9fbfd; color: #212529; font-family: 'Inter','Segoe UI',sans-serif; }
     .sidebar {
       background: #fff;
       min-width: 250px;
@@ -17,7 +17,7 @@
       box-shadow: 2px 0 14px #e0edfc;
     }
     .sidebar-logo {
-      font-weight: bold;
+      font-weight: 700;
       font-size: 1.5rem;
       margin-bottom: 2rem;
       color: #3182ce;
@@ -26,35 +26,50 @@
       color: #555 !important;
       border-radius: 8px;
       font-weight: 500;
-      margin-bottom: 0.1rem;
-      transition: background 0.17s;
+      margin-bottom: .2rem;
+      transition: all 0.2s;
     }
-    .sidebar a.active, .sidebar a:focus {
+    .sidebar a:hover {
+      background: #f1f6ff !important;
+      color: #2563eb !important;
+    }
+    .sidebar a.active {
       background: #e9f0fb !important;
       color: #1a237e !important;
     }
+
     .dashboard-main {
       background: #fff;
       min-height: 100vh;
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 40px #244b7633;
+      border-radius: 1.4rem;
+      box-shadow: 0 6px 32px rgba(0,0,0,.07);
       padding: 2.5rem;
-      max-width: 600px;
-      margin: 2.5rem auto;
+      max-width: 720px;
+      margin: 2rem auto;
     }
-    .section-title { color: #3182ce; font-size: 1.12rem; font-weight: 600; margin-bottom: 1.2rem;}
-    .btn-primary, .btn-danger { border-radius: 1.4rem; }
-    .card-section { background: #f6fbff; border-radius: 1.2rem; padding: 1.7rem 2rem 1.5rem 2rem; margin-bottom: 2.2rem; box-shadow: 0 1px 12px #3182ce09;}
-    .label-light { font-size: .97rem; color: #888; }
-    .value { font-size: 1.09rem; font-weight: 500; }
-    .divider { border-top: 1px solid #e3eefa; margin: 2.2rem 0 1.3rem 0;}
-    .small-muted { font-size: .93rem; color: #9799b4; }
-    .form-label { font-weight: 500; }
-    .alert { border-radius: 1.1rem; }
-    .toast-container .toast { background: #3182ce !important; color: #fff; }
+    h2 { color:#1a237e; font-weight:700; }
+    .section-title { color: #2563eb; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;}
+    .card-section { 
+      background: #fdfefe; 
+      border: 1px solid #e6eefc;
+      border-radius: 1.2rem; 
+      padding: 1.7rem 2rem; 
+      margin-bottom: 2rem; 
+      box-shadow: 0 1px 10px rgba(37,99,235,.05);
+    }
+    .label-light { font-size: .95rem; color: #6b7280; }
+    .value { font-size: 1.05rem; font-weight: 500; color:#111827; }
+    .small-muted { font-size: .9rem; color: #6b7280; }
+    .form-control { border-radius: .75rem; padding:.65rem 1rem; }
+    .form-control:focus { border-color:#3182ce; box-shadow:0 0 0 .2rem rgba(49,130,206,.15); }
+    .btn { border-radius: 2rem; padding:.55rem 1.4rem; font-weight:500; }
+    .btn-primary { background:#2563eb; border:none; }
+    .btn-primary:hover { background:#1e40af; }
+    .btn-danger { background:#dc2626; border:none; }
+    .btn-danger:hover { background:#b91c1c; }
     @media (max-width: 650px) {
-      .dashboard-main { padding: 1.1rem; border-radius: .9rem; }
-      .card-section { padding: 1.1rem; }
+      .dashboard-main { padding: 1.2rem; border-radius: 1rem; }
+      .card-section { padding: 1.2rem; }
     }
   </style>
 </head>
@@ -71,9 +86,8 @@
       <li><a href="pagamenti_cliente.html" class="nav-link"><i class="bi bi-credit-card me-2"></i> Pagamenti</a></li>
       <li><a href="account_cliente.html" class="nav-link active"><i class="bi bi-person-circle me-2"></i> Il mio Profilo</a></li>
       <li><a href="notifiche_cliente.html" class="nav-link"><i class="bi bi-bell me-2"></i> Notifiche</a></li>    
-     <li><a href="feedback_cliente.html" class="nav-link active"><i class="bi bi-star-half me-2"></i> Recensioni Sedi</a></li>
-      <li><a href="assistenzacliente.html" class="nav-link"><i class="bi bi-bell me-2"></i> Assistenza cliente</a></li>
-
+      <li><a href="feedback_cliente.html" class="nav-link"><i class="bi bi-star-half me-2"></i> Recensioni Sedi</a></li>
+      <li><a href="assistenzacliente.html" class="nav-link"><i class="bi bi-life-preserver me-2"></i> Assistenza cliente</a></li>
     </ul>
     <hr>
     <button id="logoutBtn" class="btn btn-outline-danger w-100 mt-auto">
@@ -83,94 +97,50 @@
 
   <!-- Main content -->
   <main class="dashboard-main">
-    <h2 class="mb-3 fw-bold"><i class="bi bi-person-circle me-2"></i>Il mio Account</h2>
+    <h2 class="mb-4"><i class="bi bi-person-circle me-2"></i>Il mio Account</h2>
 
     <!-- Riepilogo dati personali -->
-    <div class="card-section" id="riepilogoDati">
+    <div class="card-section">
       <div class="section-title">Dati personali</div>
-      <div class="row g-3 mb-1">
-        <div class="col-6">
-          <span class="label-light">Nome</span><br>
-          <span class="value" id="valNome">-</span>
-        </div>
-        <div class="col-6">
-          <span class="label-light">Cognome</span><br>
-          <span class="value" id="valCognome">-</span>
-        </div>
-        <div class="col-12">
-          <span class="label-light">Email</span><br>
-          <span class="value" id="valEmail">-</span>
-        </div>
-        <div class="col-12">
-          <span class="label-light">Telefono</span><br>
-          <span class="value" id="valTelefono">-</span>
-        </div>
+      <div class="row g-3">
+        <div class="col-6"><span class="label-light">Nome</span><br><span class="value" id="valNome">-</span></div>
+        <div class="col-6"><span class="label-light">Cognome</span><br><span class="value" id="valCognome">-</span></div>
+        <div class="col-12"><span class="label-light">Email</span><br><span class="value" id="valEmail">-</span></div>
+        <div class="col-12"><span class="label-light">Telefono</span><br><span class="value" id="valTelefono">-</span></div>
       </div>
     </div>
 
-    <!-- Modifica dati personali -->
+    <!-- Modifica dati -->
     <div class="card-section">
       <div class="section-title">Modifica dati</div>
-      <form id="formModificaDati" autocomplete="off" class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Nome</label>
-          <input type="text" class="form-control" id="inputNome" maxlength="40" required>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Cognome</label>
-          <input type="text" class="form-control" id="inputCognome" maxlength="40">
-        </div>
-        <div class="col-12">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" id="inputEmail" maxlength="60" required>
-        </div>
-        <div class="col-12">
-          <label class="form-label">Telefono</label>
-          <input type="tel" class="form-control" id="inputTelefono" maxlength="20">
-        </div>
-        <div class="col-12 text-end">
-          <button class="btn btn-primary mt-1 px-4" type="submit">
-            <i class="bi bi-save me-1"></i> Salva modifiche
-          </button>
-        </div>
+      <form id="formModificaDati" class="row g-3" autocomplete="off">
+        <div class="col-md-6"><label class="form-label">Nome</label><input type="text" class="form-control" id="inputNome" required></div>
+        <div class="col-md-6"><label class="form-label">Cognome</label><input type="text" class="form-control" id="inputCognome"></div>
+        <div class="col-12"><label class="form-label">Email</label><input type="email" class="form-control" id="inputEmail" required></div>
+        <div class="col-12"><label class="form-label">Telefono</label><input type="tel" class="form-control" id="inputTelefono"></div>
+        <div class="col-12 text-end"><button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Salva modifiche</button></div>
       </form>
     </div>
 
     <!-- Cambio password -->
     <div class="card-section">
       <div class="section-title">Cambia password</div>
-      <form id="formPassword" autocomplete="off" class="row g-3">
-        <div class="col-12">
-          <label class="form-label">Nuova password</label>
-          <input type="password" class="form-control" id="inputPassword" maxlength="40" minlength="8" autocomplete="new-password" placeholder="Almeno 8 caratteri" required>
-          <div class="small-muted mt-1">La password deve avere almeno 8 caratteri.</div>
-        </div>
-        <div class="col-12">
-          <label class="form-label">Conferma nuova password</label>
-          <input type="password" class="form-control" id="inputPasswordConferma" maxlength="40" minlength="8" autocomplete="new-password" required>
-        </div>
-        <div class="col-12 text-end">
-          <button class="btn btn-primary mt-1 px-4" type="submit">
-            <i class="bi bi-key me-1"></i> Cambia password
-          </button>
-        </div>
+      <form id="formPassword" class="row g-3" autocomplete="off">
+        <div class="col-12"><label class="form-label">Nuova password</label><input type="password" class="form-control" id="inputPassword" minlength="8" placeholder="Almeno 8 caratteri" required></div>
+        <div class="col-12"><label class="form-label">Conferma nuova password</label><input type="password" class="form-control" id="inputPasswordConferma" minlength="8" required></div>
+        <div class="col-12 text-end"><button type="submit" class="btn btn-primary"><i class="bi bi-key me-1"></i> Cambia password</button></div>
       </form>
     </div>
 
     <!-- Eliminazione account -->
     <div class="card-section">
       <div class="section-title text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Elimina account</div>
-      <div class="small-muted mb-3">
-        Eliminando il tuo account, perderai l'accesso a tutte le tue prenotazioni e dati salvati.<br>
-        <strong>L'azione è irreversibile.</strong>
-      </div>
-      <button class="btn btn-danger w-100" id="btnEliminaAccount">
-        <i class="bi bi-trash"></i> Elimina definitivamente il mio account
-      </button>
+      <div class="small-muted mb-3">Eliminando l’account perderai accesso a prenotazioni e dati salvati. <b>Azione irreversibile.</b></div>
+      <button id="btnEliminaAccount" class="btn btn-danger w-100"><i class="bi bi-trash"></i> Elimina definitivamente</button>
     </div>
+
     <div class="text-center mt-4 small-muted">
-      Vuoi cambiare la password ma l'hai dimenticata?<br>
-      <a href="recupera_password.html" class="link-primary">Recupera password</a>
+      Hai dimenticato la password?<br><a href="recupera_password.html" class="link-primary">Recupera password</a>
     </div>
   </main>
 
@@ -178,11 +148,5 @@
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/cliente_account.js"></script>
-  <script>
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("token");
-      window.location.href = "login.html";
-    });
-  </script>
 </body>
 </html>

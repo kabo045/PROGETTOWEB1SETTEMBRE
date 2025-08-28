@@ -47,12 +47,7 @@
       margin-bottom:1.5rem;
     }
 
-    /* recensioni full-width */
-    .reviews-list {
-      display:flex;
-      flex-direction:column;
-      gap:1rem;
-    }
+    .reviews-list {display:flex; flex-direction:column; gap:1rem;}
 
     .review-card {
       display:flex; gap:1rem; align-items:flex-start;
@@ -86,7 +81,6 @@
     }
     .btn-ghost:hover {background:#f1f5f9;}
 
-    /* Prenota colore #e64a19 */
     .btn-prenota {
       border:1px solid #d84315;
       background: linear-gradient(180deg,#ff7043,#e64a19);
@@ -99,7 +93,6 @@
     }
     .btn-prenota:hover {filter:brightness(1.05);}
 
-    /* Footer come index.html */
     footer {
       text-align:center;
       padding:1.6rem;
@@ -112,7 +105,7 @@
 </head>
 <body>
 
-  <!-- Sidebar invariata -->
+  <!-- Sidebar -->
   <nav class="sidebar d-none d-md-flex">
     <div class="sidebar-logo">
       <i class="bi bi-building"></i> CoWorkSpace
@@ -121,7 +114,7 @@
       <a href="index.html" class="nav-link"><i class="bi bi-house-door"></i> Home</a>
       <a href="sedi_pubbliche.html" class="nav-link"><i class="bi bi-buildings"></i> Sedi</a>
       <a href="recensioni_pubbliche.html" class="nav-link active"><i class="bi bi-star-half"></i> Recensioni</a>
-      <a href="about.html" class="nav-link"><i class="bi bi-star-half"></i>Chi siamo</a>
+      <a href="about.html" class="nav-link"><i class="bi bi-star-half"></i> Chi siamo</a>
       <a href="login.html" class="nav-link"><i class="bi bi-person-circle"></i> Login</a>
       <a href="register.html" class="nav-link"><i class="bi bi-person-plus"></i> Registrati</a>
     </nav>
@@ -174,7 +167,7 @@
               <option value="1">1 ★ o più</option>
             </select>
           </div>
-          <div class="col-6 col-md-4">
+          <div class="col-6 col-md-3">
             <label for="ordina" class="form-label">Ordina</label>
             <select class="form-select" id="ordina">
               <option value="rating_desc">Valutazione (alta → bassa)</option>
@@ -182,6 +175,12 @@
               <option value="recenti">Più recenti</option>
               <option value="vecchie">Meno recenti</option>
             </select>
+          </div>
+          <!-- Pulsante Reset -->
+          <div class="col-12 col-md-1 d-flex">
+            <button id="btn-reset" class="btn btn-outline-danger w-100" title="Reset filtri">
+              <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
           </div>
         </div>
       </div>
