@@ -20,7 +20,7 @@ Per lanciare **tutti i test (cliente, gestore, admin)** in un solo comando:
 
     npm run compose:tests:all
 
-- Se tutto funziona, alla fine vedrai solo test **passing**.  
+- Se tutto funziona, alla fine vedrai solo test **passing** (verde).  
 
 
 ### 3. Avvio test singoli

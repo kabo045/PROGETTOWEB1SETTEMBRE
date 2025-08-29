@@ -5,15 +5,15 @@
 
 ---
 
-##  Team di sviluppo
+## 👨‍💻 Team di sviluppo
 
-- **Rahul Kabotra** 
-- **Matteo Morena**
-- **Marco Grampa**
+- **Rahul Kabotra 757605** 
+- **Matteo Morena 756150**
+- **Marco Grampa 758701** 
 
 ---
 
-##  Funzionalità principali
+## ✨ Funzionalità principali
 
 - Prenotazione rapida di spazi e postazioni coworking
 - Gestione avanzata di sedi, spazi, postazioni e disponibilità
@@ -28,7 +28,7 @@
 
 ---
 
-##  Descrizione delle pagine principali
+## 📄 Descrizione delle pagine principali
 
 ### **Area Cliente**
 - `index.html` — Homepage pubblica e ricerca sedi/spazi disponibili  
@@ -73,7 +73,7 @@
 
 ---
 
-## Tecnologie utilizzate
+## 🛠️ Tecnologie utilizzate
 
 - **Frontend:** HTML5, CSS3, Bootstrap 5, JavaScript ES6+
 - **Backend:** Node.js (Express), RESTful API
@@ -83,7 +83,7 @@
 
 ---
 
-##  Avvio rapido con Docker
+## 🐳 Avvio rapido con Docker
 
 > Tutto l’ambiente (backend, database, frontend statico opzionale) si avvia con **Docker Compose** per la massima facilità e portabilità.
 
@@ -99,12 +99,11 @@ git clone https://github.com/tuo-username/coworkspace.git
 cd coworkspace
 
 3. Avvio dell’applicazione
-Assicurati di trovarti nella cartella dove è presente docker-compose.yml(progettoWeb) e lancia:
+Assicurati di trovarti nella cartella dove è presente docker-compose.yml e lancia:
 
   bash
   Copia codice
   docker-compose up --build
-
-  Il backend sarà disponibile su http://localhost:3000 (o la porta specificata)
+  Il backend sarà disponibile su http://localhost:5000 (o la porta specificata)
 
   Il database PostgreSQL sarà raggiungibile sulla porta 5432

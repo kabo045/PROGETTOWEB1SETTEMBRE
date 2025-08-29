@@ -1,4 +1,4 @@
-// test/test-admin-api.js — rotte admin "test-only" (senza modificare admin.js)
+// test/test-admin-api.js — rotte admin "test-only" montate al volo (senza modificare admin.js)
 const express = require("express");
 const request = require("supertest");
 const { Pool } = require("pg");
@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const app = require("../server");
 
-// DB dal Docker compose Middleware che verifica se l'utente autenticato ha il ruolo di amministratore. Se l'utente ha il ruolo "admin", la richiesta prosegue verso il middleware o il controller successivo.
+// DB dal Docker compose
 const { DATABASE_URL, PGUSER, PGPASSWORD, PGHOST, PGPORT, PGDATABASE } = process.env;
 const connectionString =
   DATABASE_URL ||
@@ -148,4 +148,3 @@ describe("Admin API (DB Docker, router test-only, nessuna modifica a admin.js)",
     if (typeof res.body !== "object" || Array.isArray(res.body)) throw new Error("Atteso object");
   });
 });
-

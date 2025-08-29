@@ -19,7 +19,7 @@ describe("API Gestore (rotte , DB )", function () {
   let sedeId, spazioId, postazioneId;
 
   before(async () => {
-    // Crea utente gestore
+    // 1) Crea utente gestore
     const email = "gestore.test@example.com";
     await pool.query(`DELETE FROM users WHERE email=$1`, [email]).catch(() => {});
     const passwordHash = await bcrypt.hash("Password!123", 10);
@@ -29,10 +29,10 @@ describe("API Gestore (rotte , DB )", function () {
     );
     gestoreId = ins.rows[0].id;
 
-    // JWT compatibile col middleware
+    // 2) JWT compatibile col middleware
     token = jwt.sign({ id: gestoreId, role: "gestore", email }, process.env.JWT_SECRET || "secret", { expiresIn: "2h" });
 
-    // Crea una sede via API
+    // 3) Crea una sede via API
     const sedeRes = await request(app)
       .post("/api/gestore/sedi")
       .set("Authorization", "Bearer " + token)
@@ -40,7 +40,7 @@ describe("API Gestore (rotte , DB )", function () {
     if (sedeRes.status !== 201) throw new Error("Creazione sede fallita: " + sedeRes.status + " " + JSON.stringify(sedeRes.body));
     sedeId = sedeRes.body.id;
 
-    // Crea uno spazio via API (type deve rispettare il CHECK: 'stanza privata' | 'postazione' | 'sala riunioni' | 'open space')
+    // 4) Crea uno spazio via API (type deve rispettare il CHECK: 'stanza privata' | 'postazione' | 'sala riunioni' | 'open space')
     const spazioRes = await request(app)
       .post(`/api/gestore/sedi/${sedeId}/spazi`)
       .set("Authorization", "Bearer " + token)
@@ -138,11 +138,10 @@ describe("API Gestore (rotte , DB )", function () {
     if (!Array.isArray(res.body)) throw new Error("Atteso array — body: " + JSON.stringify(res.body));
   });
 
-  // -------- CLEANUP API di esempio --------
+  // -------- CLEANUP API di esempio (facoltativo) --------
   it("DELETE /api/gestore/sedi/:id → 200", async () => {
     const res = await request(app).delete(`/api/gestore/sedi/${sedeId}`).set("Authorization", "Bearer " + token);
     if (res.status !== 200) throw new Error("Atteso 200, ottenuto " + res.status + " body=" + JSON.stringify(res.body));
     sedeId = null; // così l'after non la cancella due volte
   });
 });
-

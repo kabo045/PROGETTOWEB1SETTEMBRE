@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: CoWorkSpace API
+  version: 1.0.0
+  description: API per gestione spazi condivisi
+
+servers:
+  - url: http://localhost:3000/api
+
+paths:
+  /locations:
+    get:
+      summary: Elenco sedi disponibili
+      parameters:
+        - in: query
+          name: city
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista sedi
+  /availability:
+    get:
+      summary: Disponibilità spazi
+      parameters:
+        - in: query
+          name: locationId
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista disponibilità
+  /bookings:
+    post:
+      summary: Prenota uno spazio
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spaceId: { type: integer }
+                date: { type: string }
+                time_slot: { type: string }
+      responses:
+        '200':
+          description: Prenotazione confermata
+  /bookings/mine:
+    get:
+      summary: Prenotazioni utente loggato
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista prenotazioni
+  /notifications:
+    get:
+      summary: Notifiche utente
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista notifiche
+  /gestore/availability:
+    get:
+      summary: Disponibilità spazi della sede gestita
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista
+    post:
+      summary: Aggiungi disponibilità
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                space_id: { type: integer }
+                date: { type: string }
+                time_slot: { type: string }
+  /gestore/prenotazioni:
+    get:
+      summary: Prenotazioni ricevute
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista prenotazioni
+  /gestore/report:
+    get:
+      summary: Statistiche prenotazioni e incassi
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Report JSON
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
