@@ -157,4 +157,3 @@ ALTER TABLE payments
 CREATE INDEX idx_locations_city ON locations(city);
 CREATE INDEX idx_availability_date_slot ON availability(date, time_slot);
 CREATE INDEX idx_bookings_user ON bookings(user_id);
-
