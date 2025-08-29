@@ -1,7 +1,10 @@
 // main.js
 
+// Esegui il codice solo quando il DOM è stato completamente caricato
 document.addEventListener("DOMContentLoaded", () => {
-  // Sedi dinamiche
+
+  // Definizione delle sedi coworking con proprietà dinamiche
+  // Ogni sede ha: nome, città, tipo di spazi disponibili, servizi e immagine
   const sedi = [
     {
       nome: "Milano Centrale",
@@ -47,7 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
-  // Funzione per gestire il click su "Prenota"
+  // Funzione globale per gestire il click su "Prenota"
+  // Se l'utente ha un token salvato (quindi è loggato) → lo porta in dashboard
+  // Altrimenti → lo porta alla pagina di login
   window.handlePrenota = () => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -57,9 +62,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Popola lo slider Splide
+  // Popola lo slider Splide con le sedi
   const sliderContainer = document.getElementById("sedi-carousel");
   if (sliderContainer) {
+    // Genera dinamicamente le card HTML per ogni sede
     sliderContainer.innerHTML = sedi.map(sede => `
       <li class="splide__slide">
         <div class="card shadow h-100">
@@ -77,42 +83,42 @@ document.addEventListener("DOMContentLoaded", () => {
       </li>
     `).join("");
 
-    // Inizializza Splide
+    // Inizializza il carosello Splide con configurazione responsive
     new Splide('#slider-sedi', {
-      type: 'loop',
-      perPage: 3,
-      gap: '1rem',
-      breakpoints: {
-        992: { perPage: 2 },
-        768: { perPage: 1 }
+      type: 'loop',       // ciclo infinito
+      perPage: 3,         // 3 card per volta
+      gap: '1rem',        // spazio tra le card
+      breakpoints: {      // regole responsive
+        992: { perPage: 2 }, // su schermi medi → 2 card
+        768: { perPage: 1 }  // su schermi piccoli → 1 card
       }
     }).mount();
   }
 
-  // Scroll dolce per anchor links
+  // Scroll dolce per i link ancora (ancoraggi a sezioni interne della pagina)
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener("click", function (e) {
-      e.preventDefault();
+      e.preventDefault(); // Evita il salto immediato
       const target = document.querySelector(this.getAttribute("href"));
       if (target) {
-        target.scrollIntoView({ behavior: "smooth" });
+        target.scrollIntoView({ behavior: "smooth" }); // Scorrimento fluido
       }
     });
   });
 
-  // Mostra info extra
-  const btnScopri = document.getElementById("btn-scorpi");
+  // Gestione pulsante "Scopri di più"
+  const btnScopri = document.getElementById("btn-scopri"); 
   if (btnScopri) {
     btnScopri.addEventListener("click", () => {
       const extraInfo = document.getElementById("extra-info");
       if (extraInfo) {
-        extraInfo.classList.remove("d-none");
+        extraInfo.classList.remove("d-none"); // Mostra la sezione nascosta
         extraInfo.scrollIntoView({ behavior: "smooth" });
       }
     });
   }
 
-  // Pulsante principale "Prenota ora"
+  // Gestione pulsante principale "Prenota ora"
   const btnPrenota = document.getElementById("btn-prenota");
   if (btnPrenota) {
     btnPrenota.addEventListener("click", () => {
