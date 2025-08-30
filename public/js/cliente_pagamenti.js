@@ -23,17 +23,18 @@ function showToast(msg, type = "success") {
 
 function methodIcon(method) {
   if (!method) return `<span class="text-muted">-</span>`;
-  if (method.toLowerCase().includes("visa") || method.toLowerCase().includes("carta"))
+  const m = method.toLowerCase();
+  if (m.includes("visa") || m.includes("carta"))
     return `<i class="bi bi-credit-card-2-front-fill text-primary" title="Carta di credito"></i>`;
-  if (method.toLowerCase().includes("master"))
+  if (m.includes("master"))
     return `<img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width="26" title="Mastercard"/>`;
-  if (method.toLowerCase().includes("paypal"))
+  if (m.includes("paypal"))
     return `<img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" width="26" title="PayPal"/>`;
-  if (method.toLowerCase().includes("apple"))
+  if (m.includes("apple"))
     return `<i class="bi bi-apple text-dark" title="Apple Pay"></i>`;
-  if (method.toLowerCase().includes("satispay"))
+  if (m.includes("satispay"))
     return `<img src="https://static.satispay.com/website/dist/assets/img/icons/apple-touch-icon.png" width="26" title="Satispay" alt="Satispay"/>`;
-  if (method.toLowerCase().includes("bonifico"))
+  if (m.includes("bonifico"))
     return `<i class="bi bi-bank" title="Bonifico"></i>`;
   return `<span class="badge bg-primary">${method}</span>`;
 }
@@ -55,20 +56,19 @@ async function caricaPagamenti() {
   totalePagato.classList.add("d-none");
 
   try {
-    // 1. Prende i pagamenti veri dal backend
+    // 1) Pagamenti reali dal backend
     const resPagamenti = await fetch("/api/cliente/payments", { headers: { Authorization: `Bearer ${token}` } });
     let pagamenti = await resPagamenti.json();
     if (!Array.isArray(pagamenti)) pagamenti = [];
 
-    // 2. Prende anche le prenotazioni per trovare le "in attesa"
+    // 2) Prenotazioni per costruire voci "in attesa" o "annullato" se non esiste un pagamento
     const resPrenotazioni = await fetch("/api/cliente/bookings", { headers: { Authorization: `Bearer ${token}` } });
     let prenotazioni = await resPrenotazioni.json();
     if (!Array.isArray(prenotazioni)) prenotazioni = [];
 
-    // --- PATCH: escludi le prenotazioni cancellate ---
-    prenotazioni = prenotazioni.filter(b => b.status !== "cancellato");
+    // NON escludo più le prenotazioni cancellate: vogliamo mostrarle come "Annullato"
 
-    // Trova prenotazioni senza pagamento associato (simulazione "in attesa")
+    // Trova prenotazioni senza pagamento associato
     const pagamentiIds = pagamenti.map(p => p.booking_id);
     const fakePagamenti = prenotazioni
       .filter(b => !pagamentiIds.includes(b.id))
@@ -78,24 +78,31 @@ async function caricaPagamenti() {
         workstation_name: b.workstation_name,
         date: b.date,
         time_slot: b.time_slot,
-        // Usa SEMPRE il prezzo reale della sede!
+        // usa il prezzo reale salvato lato booking se presente
         amount: Number(b.booking_amount ?? b.amount ?? 0),
         method: null,
-        status: "attesa"
+        // se la prenotazione è cancellata, riportiamo lo stato come "cancellato"
+        status: b.status === "cancellato" ? "cancellato" : "attesa",
+        timestamp: b.updated_at || b.created_at || b.date
       }));
 
-    // Unisci entrambi
+    // Unisci entrambi i set (pagamenti reali + derivati da prenotazioni)
     pagamenti = [...pagamenti, ...fakePagamenti];
 
-    // PATCH: escludi anche qui i pagamenti di prenotazioni cancellate (per sicurezza)
-    pagamenti = pagamenti.filter(p => p.status !== "cancellato");
+    // NON escludo più i pagamenti con status "cancellato": vanno mostrati
 
-    // Filtra per stato
+    // --- FILTRI ---
+    // Stato
     const stato = filtroStato.value;
-    if (stato === "pagato") pagamenti = pagamenti.filter(p => p.status === "completato");
-    if (stato === "attesa") pagamenti = pagamenti.filter(p => p.status !== "completato");
+    if (stato === "pagato") {
+      pagamenti = pagamenti.filter(p => p.status === "completato");
+    } else if (stato === "attesa") {
+      pagamenti = pagamenti.filter(p => p.status === "attesa");
+    } else if (stato === "annullato") {
+      pagamenti = pagamenti.filter(p => p.status === "cancellato");
+    }
 
-    // Filtra per periodo
+    // Periodo
     const periodo = filtroPeriodo.value;
     if (periodo === "30gg") {
       const cutoff = new Date();
@@ -107,31 +114,42 @@ async function caricaPagamenti() {
       pagamenti = pagamenti.filter(p => new Date(p.timestamp || p.date).getFullYear() === year);
     }
 
-    // Se non ci sono pagamenti da mostrare
+    // Nessun risultato
     if (!pagamenti.length) {
       tbodyPagamenti.innerHTML = "";
       noPagamenti.classList.remove("d-none");
       return;
     }
 
-    // Tabella pagamenti
-    tbodyPagamenti.innerHTML = pagamenti.map(p => `
-      <tr class="${p.status === "completato" ? "table-success" : ""}">
-        <td class="align-middle">${p.location_name || ""}</td>
-        <td class="align-middle">${(p.space_type || "") + (p.workstation_name ? " - " + p.workstation_name : "")}</td>
-        <td class="align-middle">${formatDate(p.date)} ${formatTimeSlot(p.time_slot)}</td>
-        <td class="align-middle text-end"><b>€${Number(p.amount ?? 0).toFixed(2)}</b></td>
-        <td class="align-middle text-center">${methodIcon(p.method)}</td>
-        <td class="align-middle text-center">
-          ${p.status === "completato"
-            ? `<span class="badge bg-success badge-status"><i class="bi bi-check-circle"></i> Pagato</span>`
-            : `<span class="badge bg-warning text-dark badge-status"><i class="bi bi-hourglass-split"></i> In attesa</span>`
-          }
-        </td>
-      </tr>
-    `).join("");
+    // Tabella
+    tbodyPagamenti.innerHTML = pagamenti.map(p => {
+      const rowClass =
+        p.status === "completato" ? "table-success" :
+        p.status === "cancellato" ? "table-danger" : "";
 
-    // Totale pagato (solo quelli completati)
+      const statoBadge =
+        p.status === "completato"
+          ? `<span class="badge bg-success badge-status"><i class="bi bi-check-circle"></i> Pagato</span>`
+          : p.status === "cancellato"
+          ? `<span class="badge bg-danger badge-status"><i class="bi bi-x-circle"></i> Annullato</span>`
+          : `<span class="badge bg-warning text-dark badge-status"><i class="bi bi-hourglass-split"></i> In attesa</span>`;
+
+      const space = (p.space_type || "") + (p.workstation_name ? " - " + p.workstation_name : "");
+      const amount = Number(p.amount ?? 0);
+
+      return `
+        <tr class="${rowClass}">
+          <td class="align-middle">${p.location_name || ""}</td>
+          <td class="align-middle">${space}</td>
+          <td class="align-middle">${formatDate(p.date)} ${formatTimeSlot(p.time_slot)}</td>
+          <td class="align-middle text-end"><b>€${amount.toFixed(2)}</b></td>
+          <td class="align-middle text-center">${methodIcon(p.method)}</td>
+          <td class="align-middle text-center">${statoBadge}</td>
+        </tr>
+      `;
+    }).join("");
+
+    // Totale pagato: solo i completati
     const totale = pagamenti
       .filter(p => p.status === "completato")
       .reduce((sum, p) => sum + Number(p.amount ?? 0), 0);
